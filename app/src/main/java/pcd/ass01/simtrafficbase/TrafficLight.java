@@ -22,6 +22,7 @@ public class TrafficLight {
 		this.yellowDuration = yellowDuration;
 		this.pos = pos;
 		this.initialState = initialState;
+		this.state = initialState;
 	}
 
 	public void init() {
