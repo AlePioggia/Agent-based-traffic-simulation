@@ -16,11 +16,11 @@ public class RunTrafficSimulation {
 		simulation.setup();
 
 		RoadSimStatistics stat = new RoadSimStatistics();
-		RoadSimView view = new RoadSimView();
+		RoadSimView view = new RoadSimView(simulation);
 		view.display();
 
 		simulation.addSimulationListener(stat);
 		simulation.addSimulationListener(view);
-		simulation.run(10000);
+		simulation.run();
 	}
 }

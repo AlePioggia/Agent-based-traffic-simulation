@@ -12,9 +12,10 @@ public interface SimulationListener {
 	 * @param env
 	 */
 	void notifyInit(int t, List<AbstractAgent> agents, AbstractEnvironment env);
-	
+
 	/**
 	 * Called at each step, updater all updates
+	 * 
 	 * @param t
 	 * @param agents
 	 * @param env

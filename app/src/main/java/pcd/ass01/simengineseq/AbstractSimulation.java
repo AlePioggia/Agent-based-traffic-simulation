@@ -36,6 +36,10 @@ public abstract class AbstractSimulation {
 	private long startWallTime;
 	private long endWallTime;
 	private long averageTimePerStep;
+	private boolean isRunning = false;
+	private int steps = 0;
+	private int currentStep = 0;
+	private boolean stop = false;
 
 	protected AbstractSimulation() {
 		agents = new ArrayList<AbstractAgent>();
@@ -48,7 +52,7 @@ public abstract class AbstractSimulation {
 	 * Method used to configure the simulation, specifying env and agents
 	 * 
 	 */
-	protected abstract void setup();
+	public abstract void setup();
 
 	/**
 	 * Method running the simulation for a number of steps,
@@ -56,6 +60,61 @@ public abstract class AbstractSimulation {
 	 * 
 	 * @param numSteps
 	 */
+	public void run() {
+		Master master = new MasterImpl(10);
+
+		startWallTime = System.currentTimeMillis();
+
+		/* initialize the env and the agents inside */
+		int t = t0;
+
+		env.init();
+		for (var a : agents) {
+			a.init(env);
+		}
+
+		this.notifyReset(t, agents, env);
+
+		long timePerStep = 0;
+		while (true) {
+			while (!isRunning || this.currentStep > this.steps) {
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+
+			currentWallTime = System.currentTimeMillis();
+
+			/* make a step */
+
+			env.step(dt);
+			for (var agent : agents) {
+				agent.setDt(dt);
+				master.submitTask(agent::step);
+			}
+
+			t += dt;
+
+			notifyNewStep(t, agents, env);
+
+			this.currentStep++;
+			timePerStep += System.currentTimeMillis() - currentWallTime;
+
+			if (toBeInSyncWithWallTime) {
+				syncWithWallTime();
+			}
+			if (stop) {
+				break;
+			}
+		}
+
+		endWallTime = System.currentTimeMillis();
+		this.averageTimePerStep = timePerStep / this.steps;
+		// master.shutdown();
+	}
+
 	public void run(int numSteps) {
 
 		Master master = new MasterImpl(10);
@@ -110,6 +169,34 @@ public abstract class AbstractSimulation {
 
 	public long getAverageTimePerCycle() {
 		return averageTimePerStep;
+	}
+
+	public void start(int steps) {
+		isRunning = true;
+		this.steps = steps;
+		this.currentStep = 0;
+	}
+
+	public void stop() {
+		isRunning = false;
+	}
+
+	public void reset() {
+		isRunning = false;
+		steps = 0;
+		startWallTime = 0;
+		endWallTime = 0;
+		averageTimePerStep = 0;
+	}
+
+	public boolean isRunning() {
+		return this.isRunning;
+	}
+
+	public void elaborateSteps(int steps) {
+		isRunning = true;
+		this.steps = steps;
+		this.currentStep = 0;
 	}
 
 	/* methods for configuring the simulation */
