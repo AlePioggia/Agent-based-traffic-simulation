@@ -3,6 +3,9 @@ package pcd.ass01.simengineseq;
 import java.util.ArrayList;
 import java.util.List;
 
+import pcd.ass01.framework.Master;
+import pcd.ass01.framework.MasterImpl;
+
 /**
  * Base class for defining concrete simulations
  * 
@@ -55,6 +58,8 @@ public abstract class AbstractSimulation {
 	 */
 	public void run(int numSteps) {
 
+		Master master = new MasterImpl(10);
+
 		startWallTime = System.currentTimeMillis();
 
 		/* initialize the env and the agents inside */
@@ -63,7 +68,6 @@ public abstract class AbstractSimulation {
 		// env.init();
 		for (var a : agents) {
 			a.init(env);
-			a.start();
 		}
 
 		this.notifyReset(t, agents, env);
@@ -80,7 +84,7 @@ public abstract class AbstractSimulation {
 			env.step(dt);
 			for (var agent : agents) {
 				agent.setDt(dt);
-				agent.step();
+				master.submitTask(agent::step);
 			}
 
 			t += dt;
@@ -97,7 +101,7 @@ public abstract class AbstractSimulation {
 
 		endWallTime = System.currentTimeMillis();
 		this.averageTimePerStep = timePerStep / numSteps;
-
+		// master.shutdown();
 	}
 
 	public long getSimulationDuration() {

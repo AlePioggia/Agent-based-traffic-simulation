@@ -47,13 +47,5 @@ public class TrafficSimulationSingleRoadMassiveNumberOfCars extends AbstractSimu
 			this.addAgent(car);
 			/* no sync with wall-time */
 		}
-		// startAgentThreads();
-	}
-
-	private void startAgentThreads() {
-		for (var agent : agents) {
-			System.out.println(Thread.activeCount());
-			agent.start();
-		}
 	}
 }
