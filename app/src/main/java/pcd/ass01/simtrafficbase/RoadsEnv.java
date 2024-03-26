@@ -5,10 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
+import pcd.ass01.monitors.ReadWriteMonitor;
+import pcd.ass01.monitors.ReadWriteMonitorImpl;
 import pcd.ass01.simengineseq.AbstractEnvironment;
 import pcd.ass01.simengineseq.Action;
 import pcd.ass01.simengineseq.Percept;
-import pcd.ass01.simtrafficbase.MoveForward;
 
 public class RoadsEnv extends AbstractEnvironment {
 
@@ -24,12 +25,14 @@ public class RoadsEnv extends AbstractEnvironment {
 
 	/* cars situated in the environment */
 	private HashMap<String, CarAgentInfo> registeredCars;
+	private ReadWriteMonitor readWriteMonitor;
 
 	public RoadsEnv() {
 		super("traffic-env");
 		registeredCars = new HashMap<>();
 		trafficLights = new ArrayList<>();
 		roads = new ArrayList<>();
+		this.readWriteMonitor = new ReadWriteMonitorImpl();
 	}
 
 	@Override
@@ -47,7 +50,7 @@ public class RoadsEnv extends AbstractEnvironment {
 	}
 
 	public void registerNewCar(CarAgent car, Road road, double pos) {
-		registeredCars.put(car.getId(), new CarAgentInfo(car, road, pos));
+		registeredCars.put(car.getObjectId(), new CarAgentInfo(car, road, pos));
 	}
 
 	public Road createRoad(P2d p0, P2d p1) {
@@ -98,26 +101,27 @@ public class RoadsEnv extends AbstractEnvironment {
 	@Override
 	public void doAction(String agentId, Action act) {
 		switch (act) {
-		case MoveForward mv: {
-			CarAgentInfo info = registeredCars.get(agentId);
-			Road road = info.getRoad();
-			Optional<CarAgentInfo> nearestCar = getNearestCarInFront(road, info.getPos(), CAR_DETECTION_RANGE);
-			
-			if (!nearestCar.isEmpty()) {
-				double dist = nearestCar.get().getPos() - info.getPos();
-				if (dist > mv.distance() + MIN_DIST_ALLOWED) {
+			case MoveForward mv: {
+				CarAgentInfo info = registeredCars.get(agentId);
+				Road road = info.getRoad();
+				Optional<CarAgentInfo> nearestCar = getNearestCarInFront(road, info.getPos(), CAR_DETECTION_RANGE);
+
+				if (!nearestCar.isEmpty()) {
+					double dist = nearestCar.get().getPos() - info.getPos();
+					if (dist > mv.distance() + MIN_DIST_ALLOWED) {
+						info.updatePos(info.getPos() + mv.distance());
+					}
+				} else {
 					info.updatePos(info.getPos() + mv.distance());
 				}
-			} else {
-				info.updatePos(info.getPos() + mv.distance());
-			}
 
-			if (info.getPos() > road.getLen()) {
-				info.updatePos(0);
+				if (info.getPos() > road.getLen()) {
+					info.updatePos(0);
+				}
+				break;
 			}
-			break;
-		}
-		default: break;
+			default:
+				break;
 		}
 	}
 
@@ -131,5 +135,10 @@ public class RoadsEnv extends AbstractEnvironment {
 
 	public List<TrafficLight> getTrafficLights() {
 		return trafficLights;
+	}
+
+	@Override
+	public ReadWriteMonitor getReadWriteMonitor() {
+		return this.readWriteMonitor;
 	}
 }
