@@ -117,7 +117,7 @@ public abstract class AbstractSimulation {
 
 	public void run(int numSteps) {
 
-		Master master = new MasterImpl(10);
+		Master master = new MasterImpl(20);
 
 		startWallTime = System.currentTimeMillis();
 
