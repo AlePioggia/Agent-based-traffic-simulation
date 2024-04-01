@@ -40,11 +40,13 @@ public abstract class AbstractSimulation {
 	private int steps = 0;
 	private int currentStep = 0;
 	private boolean stop = false;
+	private Master master;
 
 	protected AbstractSimulation() {
 		agents = new ArrayList<AbstractAgent>();
 		listeners = new ArrayList<SimulationListener>();
 		toBeInSyncWithWallTime = false;
+		this.master = new MasterImpl(20);
 	}
 
 	/**
@@ -61,7 +63,7 @@ public abstract class AbstractSimulation {
 	 * @param numSteps
 	 */
 	public void run() {
-		Master master = new MasterImpl(10);
+		// Master master = new MasterImpl(10);
 
 		startWallTime = System.currentTimeMillis();
 
@@ -92,7 +94,7 @@ public abstract class AbstractSimulation {
 			env.step(dt);
 			for (var agent : agents) {
 				agent.setDt(dt);
-				master.submitTask(agent::step);
+				this.master.submitTask(agent::step);
 			}
 
 			t += dt;
@@ -112,12 +114,10 @@ public abstract class AbstractSimulation {
 
 		endWallTime = System.currentTimeMillis();
 		this.averageTimePerStep = timePerStep / this.steps;
-		// master.shutdown();
+		this.master.shutdown();
 	}
 
 	public void run(int numSteps) {
-
-		Master master = new MasterImpl(20);
 
 		startWallTime = System.currentTimeMillis();
 
@@ -160,7 +160,7 @@ public abstract class AbstractSimulation {
 
 		endWallTime = System.currentTimeMillis();
 		this.averageTimePerStep = timePerStep / numSteps;
-		// master.shutdown();
+		this.master.shutdown();
 	}
 
 	public long getSimulationDuration() {

@@ -46,11 +46,14 @@ public class MasterImpl implements Master {
     @Override
     public void shutdown() {
         for (Thread worker : workers) {
+            worker.interrupt();
+        }
+
+        for (Thread worker : workers) {
             try {
                 worker.join();
             } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                Thread.currentThread().interrupt();
             }
         }
     }

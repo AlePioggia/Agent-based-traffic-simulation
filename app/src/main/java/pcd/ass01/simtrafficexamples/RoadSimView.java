@@ -33,7 +33,6 @@ public class RoadSimView extends JFrame implements SimulationListener {
 		JPanel buttonPanel = new JPanel();
 		JButton startButton = new JButton("Start");
 		JButton stopButton = new JButton("Stop");
-		JButton resetButton = new JButton("Reset");
 
 		stopButton.addActionListener(e -> {
 			simulation.stop();
@@ -48,7 +47,6 @@ public class RoadSimView extends JFrame implements SimulationListener {
 		JTextField stepsNumber = new JTextField(10);
 		stepsPanel.add(stepsLabel);
 		stepsPanel.add(stepsNumber);
-		stepsPanel.add(resetButton);
 
 		startButton.addActionListener(e -> {
 
@@ -57,10 +55,6 @@ public class RoadSimView extends JFrame implements SimulationListener {
 			if (steps > 0) {
 				simulation.elaborateSteps(steps);
 			}
-		});
-
-		resetButton.addActionListener(e -> {
-			simulation.reset();
 		});
 
 		JPanel controlPanel = new JPanel();

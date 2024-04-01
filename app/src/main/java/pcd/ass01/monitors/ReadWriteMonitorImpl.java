@@ -27,7 +27,7 @@ public class ReadWriteMonitorImpl implements ReadWriteMonitor {
                 try {
                     okToRead.await();
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    Thread.currentThread().interrupt();
                 }
             }
             this.readers++;
@@ -44,6 +44,8 @@ public class ReadWriteMonitorImpl implements ReadWriteMonitor {
             if (this.readers == 0) {
                 okToWrite.signal();
             }
+        } catch (Exception e) {
+            Thread.currentThread().interrupt();
         } finally {
             mutex.unlock();
         }
@@ -56,11 +58,15 @@ public class ReadWriteMonitorImpl implements ReadWriteMonitor {
             while (writers > 0 || readers > 0) {
                 try {
                     okToWrite.await();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                } catch (Exception e) {
+                    Thread.currentThread().interrupt();
+                    return;
                 }
             }
             this.writers++;
+        } catch (Exception e) {
+            Thread.currentThread().interrupt();
+            return;
         } finally {
             mutex.unlock();
         }
@@ -73,6 +79,9 @@ public class ReadWriteMonitorImpl implements ReadWriteMonitor {
             this.writers--;
             okToWrite.signal();
             okToRead.signalAll();
+        } catch (Exception e) {
+            Thread.currentThread().interrupt();
+            return;
         } finally {
             mutex.unlock();
         }
