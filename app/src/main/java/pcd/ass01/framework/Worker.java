@@ -1,11 +1,9 @@
 package pcd.ass01.framework;
 
-import java.util.concurrent.BlockingQueue;
-
 public class Worker implements Runnable {
-    private BlockingQueue<WorkerTask> tasksQueue;
+    private ThreadSafeQueue<WorkerTask> tasksQueue;
 
-    public Worker(BlockingQueue<WorkerTask> tasksQueue) {
+    public Worker(ThreadSafeQueue<WorkerTask> tasksQueue) {
         this.tasksQueue = tasksQueue;
     }
 
@@ -13,7 +11,7 @@ public class Worker implements Runnable {
     public void run() {
         while (!Thread.currentThread().isInterrupted()) {
             try {
-                WorkerTask task = tasksQueue.take();
+                WorkerTask task = tasksQueue.dequeue();
                 task.execute();
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();

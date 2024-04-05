@@ -2,16 +2,14 @@ package pcd.ass01.framework;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 public class MasterImpl implements Master {
 
-    private BlockingQueue<WorkerTask> taskQueue;
+    private ThreadSafeQueue<WorkerTask> taskQueue;
     private List<Thread> workers;
 
     public MasterImpl() {
-        this.taskQueue = new LinkedBlockingQueue<>();
+        this.taskQueue = new ThreadSafeQueue<>();
         this.workers = new ArrayList<Thread>();
 
         for (int i = 0; i < SetupConstants.NUM_WORKERS.getValue(); i++) {
@@ -23,7 +21,7 @@ public class MasterImpl implements Master {
     }
 
     public MasterImpl(int numWorkers) {
-        this.taskQueue = new LinkedBlockingQueue<>();
+        this.taskQueue = new ThreadSafeQueue<>();
         this.workers = new ArrayList<Thread>();
 
         for (int i = 0; i < numWorkers; i++) {
@@ -37,7 +35,7 @@ public class MasterImpl implements Master {
     @Override
     public void submitTask(WorkerTask task) {
         try {
-            taskQueue.put(task);
+            taskQueue.enqueue(task);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
