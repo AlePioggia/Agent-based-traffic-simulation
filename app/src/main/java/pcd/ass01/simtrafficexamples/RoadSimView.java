@@ -14,6 +14,8 @@ import pcd.ass01.simtrafficbase.V2d;
 
 import java.awt.*;
 import javax.swing.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class RoadSimView extends JFrame implements SimulationListener {
 
@@ -69,6 +71,14 @@ public class RoadSimView extends JFrame implements SimulationListener {
 		cp.add(BorderLayout.SOUTH, controlPanel); // Aggiungi il pannello di controllo con pulsanti e passaggi
 		setContentPane(cp);
 
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				if (!simulation.isShut()) {
+					simulation.shutdown();
+				}
+			}
+		});
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 

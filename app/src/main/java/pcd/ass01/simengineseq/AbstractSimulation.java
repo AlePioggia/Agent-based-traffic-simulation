@@ -39,8 +39,9 @@ public abstract class AbstractSimulation {
 	private boolean isRunning = false;
 	private int steps = 0;
 	private int currentStep = 0;
-	private boolean stop = false;
+	private boolean terminate = false;
 	private Master master;
+	private boolean isShut = false;
 
 	protected AbstractSimulation() {
 		agents = new ArrayList<AbstractAgent>();
@@ -107,14 +108,7 @@ public abstract class AbstractSimulation {
 			if (toBeInSyncWithWallTime) {
 				syncWithWallTime();
 			}
-			if (stop) {
-				break;
-			}
 		}
-
-		endWallTime = System.currentTimeMillis();
-		this.averageTimePerStep = timePerStep / this.steps;
-		this.master.shutdown();
 	}
 
 	public void run(int numSteps) {
@@ -131,8 +125,8 @@ public abstract class AbstractSimulation {
 
 		this.notifyReset(t, agents, env);
 
-		long timePerStep = 0;
 		int nSteps = 0;
+		long timePerStep = 0;
 
 		while (nSteps < numSteps) {
 
@@ -159,8 +153,13 @@ public abstract class AbstractSimulation {
 		}
 
 		endWallTime = System.currentTimeMillis();
-		this.averageTimePerStep = timePerStep / numSteps;
+		this.averageTimePerStep = timePerStep / nSteps;
+		System.out.println("Average time per step: " + this.averageTimePerStep);
 		this.master.shutdown();
+	}
+
+	public boolean isShut() {
+		return this.isShut;
 	}
 
 	public long getSimulationDuration() {
@@ -175,6 +174,12 @@ public abstract class AbstractSimulation {
 		isRunning = true;
 		this.steps = steps;
 		this.currentStep = 0;
+	}
+
+	public void shutdown() {
+		endWallTime = System.currentTimeMillis();
+		this.master.shutdown();
+		System.out.println(Thread.activeCount());
 	}
 
 	public void stop() {

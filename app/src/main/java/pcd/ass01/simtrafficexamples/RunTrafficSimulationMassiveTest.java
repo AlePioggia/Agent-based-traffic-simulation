@@ -18,7 +18,7 @@ public class RunTrafficSimulationMassiveTest {
 		log("Completed in " + d + " ms - average time per step: " + simulation.getAverageTimePerCycle() + " ms");
 
 		int activeThreadCount = Thread.activeCount();
-		System.out.println("Numero di thread attivi: " + activeThreadCount);
+		System.out.println("Active threads: " + activeThreadCount);
 	}
 
 	private static void log(String msg) {
