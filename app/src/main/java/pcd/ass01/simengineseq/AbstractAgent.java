@@ -1,13 +1,11 @@
 package pcd.ass01.simengineseq;
 
-import org.checkerframework.checker.units.qual.s;
-
 /**
  * 
  * Base class for defining types of agents taking part to the simulation
  * 
  */
-public abstract class AbstractAgent extends Thread {
+public abstract class AbstractAgent {
 
 	private String myId;
 	protected AbstractEnvironment env;
@@ -44,11 +42,6 @@ public abstract class AbstractAgent extends Thread {
 
 	protected AbstractEnvironment getEnv() {
 		return this.env;
-	}
-
-	@Override
-	public void run() {
-		step();
 	}
 
 	public void setDt(int dt) {

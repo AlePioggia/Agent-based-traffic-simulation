@@ -64,7 +64,6 @@ public abstract class AbstractSimulation {
 	 * @param numSteps
 	 */
 	public void run() {
-		// Master master = new MasterImpl(10);
 
 		startWallTime = System.currentTimeMillis();
 
@@ -78,7 +77,6 @@ public abstract class AbstractSimulation {
 
 		this.notifyReset(t, agents, env);
 
-		long timePerStep = 0;
 		while (true) {
 			while (!isRunning || this.currentStep > this.steps) {
 				try {
@@ -103,7 +101,6 @@ public abstract class AbstractSimulation {
 			notifyNewStep(t, agents, env);
 
 			this.currentStep++;
-			timePerStep += System.currentTimeMillis() - currentWallTime;
 
 			if (toBeInSyncWithWallTime) {
 				syncWithWallTime();
@@ -118,7 +115,7 @@ public abstract class AbstractSimulation {
 		/* initialize the env and the agents inside */
 		int t = t0;
 
-		// env.init();
+		env.init();
 		for (var a : agents) {
 			a.init(env);
 		}
